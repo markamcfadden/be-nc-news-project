@@ -1,4 +1,3 @@
-const endpointsJson = require("../endpoints.json");
 const db = require("../db/connection.js");
 const request = require("supertest");
 const app = require("../app.js");
@@ -19,6 +18,7 @@ describe("GET /api/topics", () => {
         expect(topics.length).toBe(3);
       });
   });
+
   test("should return topic objects with wanted keys and correct data type as each value", () => {
     return request(app)
       .get("/api/topics")
@@ -38,7 +38,6 @@ describe("GET /api/topics", () => {
       .get("/api/topicz")
       .expect(404)
       .then(({ body }) => {
-        console.log(body);
         expect(body.msg).toBe("Path not found");
       });
   });
