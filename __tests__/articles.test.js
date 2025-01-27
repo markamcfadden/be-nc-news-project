@@ -27,7 +27,7 @@ describe("GET /api/articles/:article_id", () => {
         });
       });
   });
-  test("404: responds with an error message when given a valid but non-existent team id", () => {
+  test("404: responds with an error message when given a valid but non-existent article id", () => {
     return request(app)
       .get("/api/articles/600")
       .expect(404)
@@ -35,7 +35,7 @@ describe("GET /api/articles/:article_id", () => {
         expect(body.msg).toBe("article does not exist");
       });
   });
-  test("400: responds with error message when given an invalid team name", () => {
+  test("400: responds with error message when given an invalid article name", () => {
     return request(app)
       .get("/api/articles/ducks")
       .expect(400)
