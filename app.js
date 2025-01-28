@@ -33,4 +33,9 @@ app.use((err, req, res, next) => {
   }
 });
 
+app.use((err, req, res, next) => {
+  console.log("error not handled yet");
+  res.status(500).send({ msg: "Internal Server Error" });
+});
+
 module.exports = app;
