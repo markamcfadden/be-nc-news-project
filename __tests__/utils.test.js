@@ -3,6 +3,7 @@ const {
   createRef,
   formatComments,
   checkArticleIDExists,
+  checkUsernameExists,
 } = require("../db/seeds/utils");
 
 describe("convertTimestampToDate", () => {
@@ -104,7 +105,7 @@ describe("formatComments", () => {
   });
 });
 
-describe.only("checkArticleIDExists", () => {
+describe("checkArticleIDExists", () => {
   test("should resolve promise if id exists ", () => {
     return expect(checkArticleIDExists(1)).resolves.toBe(undefined);
   });
@@ -112,6 +113,20 @@ describe.only("checkArticleIDExists", () => {
     return expect(checkArticleIDExists(500)).rejects.toMatchObject({
       status: 404,
       msg: "article id does not exist",
+    });
+  });
+});
+
+describe("checkUsernameExists", () => {
+  test("should resolve promise if username exists ", () => {
+    return expect(checkUsernameExists("butter_bridge")).resolves.toBe(
+      undefined
+    );
+  });
+  test("should reject promise if username does not exist", () => {
+    return expect(checkUsernameExists("mcflurryoreos")).rejects.toMatchObject({
+      status: 404,
+      msg: "username does not exist",
     });
   });
 });
