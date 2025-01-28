@@ -1,11 +1,11 @@
 const {
-  SelectCommentsByArticleID,
-  InsertCommentByArticleID,
+  selectCommentsByArticleID,
+  insertCommentByArticleID,
 } = require("../models/comments.models");
 
 exports.getCommentsByArticleID = (req, res, next) => {
   const { article_id } = req.params;
-  return SelectCommentsByArticleID(article_id)
+  return selectCommentsByArticleID(article_id)
     .then((comments) => {
       res.status(200).send({ comments });
     })
@@ -25,7 +25,7 @@ exports.postCommentByArticleID = (req, res, next) => {
     return res.status(400).send({ msg: "Bad request, unexpected fields" });
   }
 
-  return InsertCommentByArticleID(article_id, username, body)
+  return insertCommentByArticleID(article_id, username, body)
     .then((comment) => {
       res.status(201).send({ comment });
     })

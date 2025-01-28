@@ -5,7 +5,7 @@ const {
   checkUsernameExists,
 } = require("../db/seeds/utils");
 
-exports.SelectCommentsByArticleID = (article_id) => {
+exports.selectCommentsByArticleID = (article_id) => {
   return checkArticleIDExists(article_id)
     .then(() => {
       return db.query(
@@ -20,7 +20,7 @@ exports.SelectCommentsByArticleID = (article_id) => {
     });
 };
 
-exports.InsertCommentByArticleID = (article_id, username, body) => {
+exports.insertCommentByArticleID = (article_id, username, body) => {
   if (!username || !body) {
     return Promise.reject({
       status: 400,
