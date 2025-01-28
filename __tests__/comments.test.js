@@ -4,8 +4,7 @@ const app = require("../app.js");
 const seed = require("../db/seeds/seed.js");
 const testData = require("../db/data/test-data/index.js");
 
-const { topicData, userData, articleData, commentData } = testData;
-beforeEach(() => seed({ topicData, userData, articleData, commentData }));
+beforeEach(() => seed(testData));
 afterAll(() => db.end());
 
 describe("GET /api/articles/:article_id/comments", () => {
@@ -53,6 +52,109 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad request");
+      });
+  });
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("201: should return the posted comment", () => {
+    const newComment = { username: "butter_bridge", body: "gripping read" };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        const comment = body.comment[0];
+        expect(comment).toMatchObject({
+          comment_id: 19,
+          body: "gripping read",
+          article_id: 2,
+          author: "butter_bridge",
+          votes: 0,
+          created_at: expect.any(String),
+        });
+      });
+  });
+  test("400: should return an error if username is missing ", () => {
+    const newComment = { body: "gripping read" };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request, missing required fields");
+      });
+  });
+  test("400: should return an error if body is missing", () => {
+    const newComment = { username: "butter_bridge" };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request, missing required fields");
+      });
+  });
+  test("400: should return an error if the username is not a string", () => {
+    const newComment = { username: 1223, body: "gripping read" };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) =>
+        expect(body.msg).toBe("Bad request, invalid data type")
+      );
+  });
+  test("400: should return an error if the body is not a string", () => {
+    const newComment = { username: "butter_bridge", body: true };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) =>
+        expect(body.msg).toBe("Bad request, invalid data type")
+      );
+  });
+  test("404: should return error if article id does not exist", () => {
+    const newComment = { username: "butter_bridge", body: "gripping read" };
+    return request(app)
+      .post("/api/articles/500/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => expect(body.msg).toBe("article id does not exist"));
+  });
+  test("404: should return error if username does not exist", () => {
+    const newComment = { username: "mcflurryoreos", body: "gripping read" };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("username does not exist");
+      });
+  });
+  test("400: should return an error if invalid data type for article_id is entered", () => {
+    const newComment = { username: "butter_bridge", body: "gripping read" };
+    return request(app)
+      .post("/api/articles/ducks/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("400: should return an error if body has unexpected fields", () => {
+    const newComment = {
+      username: "butter_bridge",
+      age: 23,
+      body: "gripping read",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request, unexpected fields");
       });
   });
 });
