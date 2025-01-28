@@ -1,5 +1,8 @@
 const db = require("../db/connection");
-const { checkArticleIDExists } = require("../db/seeds/utils");
+const {
+  checkArticleIDExists,
+  convertTimestampToDate,
+} = require("../db/seeds/utils");
 
 exports.selectArticles = () => {
   return db
@@ -31,4 +34,31 @@ exports.selectArticleByID = (id) => {
     .then(({ rows }) => {
       return rows[0];
     });
+};
+
+exports.patchArticleByID = (article_id, votesToAdd) => {
+  if (!votesToAdd) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad request, missing required fields",
+    });
+  }
+
+  if (typeof votesToAdd !== "number") {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad request, invalid data type",
+    });
+  }
+
+  return checkArticleIDExists(article_id).then(() => {
+    return db
+      .query(
+        `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
+        [votesToAdd, article_id]
+      )
+      .then(({ rows }) => {
+        return rows.map(convertTimestampToDate);
+      });
+  });
 };

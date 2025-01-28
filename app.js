@@ -8,6 +8,7 @@ const {
 const {
   getArticles,
   getArticleByID,
+  updateArticleByID,
 } = require("./controllers/articles.controller");
 const app = express();
 
@@ -20,6 +21,8 @@ app.get("/api/topics", getTopics);
 app.get("/api/articles", getArticles);
 
 app.get("/api/articles/:article_ID", getArticleByID);
+
+app.patch("/api/articles/:article_ID", updateArticleByID);
 
 app.get("/api/articles/:article_id/comments", getCommentsByArticleID);
 
