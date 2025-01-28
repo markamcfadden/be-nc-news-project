@@ -9,7 +9,8 @@ exports.selectArticles = () => {
       topic, 
       articles.author, 
       TO_CHAR(articles.created_at, 'YYYY-MM-DD HH24:MI:SS') AS created_at,
-      articles.votes, article_img_url, 
+      articles.votes, 
+      article_img_url, 
       COUNT(comments.article_id) AS comment_count 
       FROM articles 
       LEFT JOIN comments 
