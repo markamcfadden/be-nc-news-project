@@ -1,4 +1,5 @@
 const db = require("../db/connection");
+const { checkArticleIDExists } = require("../db/seeds/utils");
 
 exports.selectArticles = () => {
   return db
@@ -23,12 +24,11 @@ exports.selectArticles = () => {
 };
 
 exports.selectArticleByID = (id) => {
-  return db
-    .query("SELECT * FROM articles WHERE article_id = $1", [id])
-    .then(({ rows }) => {
-      if (rows.length === 0) {
-        return Promise.reject("article does not exist");
-      }
-      return rows[0];
-    });
+  return checkArticleIDExists(id).then(() => {
+    return db
+      .query("SELECT * FROM articles WHERE article_id = $1", [id])
+      .then(({ rows }) => {
+        return rows[0];
+      });
+  });
 };
