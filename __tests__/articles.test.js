@@ -32,7 +32,7 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/600")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("article does not exist");
+        expect(body.msg).toBe("article id does not exist");
       });
   });
   test("400: responds with error message when given an invalid article name", () => {
