@@ -6,6 +6,12 @@ const {
   checkUsernameExists,
 } = require("../db/seeds/utils");
 
+const db = require("../db/connection");
+
+afterAll(() => {
+  db.end();
+});
+
 describe("convertTimestampToDate", () => {
   test("returns a new object", () => {
     const timestamp = 1557572706232;
