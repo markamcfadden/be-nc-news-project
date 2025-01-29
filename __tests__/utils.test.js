@@ -4,6 +4,7 @@ const {
   formatComments,
   checkArticleIDExists,
   checkUsernameExists,
+  checkCommentExists,
 } = require("../db/seeds/utils");
 
 const db = require("../db/connection");
@@ -133,6 +134,18 @@ describe("checkUsernameExists", () => {
     return expect(checkUsernameExists("mcflurryoreos")).rejects.toMatchObject({
       status: 404,
       msg: "username does not exist",
+    });
+  });
+});
+
+describe("checkCommentExists", () => {
+  test("should resolve if comment id exists", () => {
+    return expect(checkCommentExists(18)).resolves.toBe(undefined);
+  });
+  test("should reject if comment doesnt exist", () => {
+    return expect(checkCommentExists(400)).rejects.toMatchObject({
+      status: 404,
+      msg: "comment does not exist",
     });
   });
 });
