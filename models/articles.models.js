@@ -43,6 +43,7 @@ exports.selectArticles = (queries) => {
       return Promise.reject({ status: 400, msg: "Invalid sorting query" });
     }
   }
+
   sqlString += ` GROUP BY articles.article_id`;
   sqlString += ` ORDER BY ${sort_by}`;
 
