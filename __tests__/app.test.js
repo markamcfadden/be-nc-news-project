@@ -400,7 +400,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Bad request");
       });
   });
-  test("400: should return an error if body has unexpected fields", () => {
+  test("201: should return the posted comment and ignore unwanted/additional fields", () => {
     const newComment = {
       username: "butter_bridge",
       age: 23,
@@ -409,9 +409,17 @@ describe("POST /api/articles/:article_id/comments", () => {
     return request(app)
       .post("/api/articles/2/comments")
       .send(newComment)
-      .expect(400)
+      .expect(201)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request, unexpected fields");
+        const comment = body.comment[0];
+        expect(comment).toMatchObject({
+          comment_id: 19,
+          body: "gripping read",
+          article_id: 2,
+          author: "butter_bridge",
+          votes: 0,
+          created_at: expect.any(String),
+        });
       });
   });
 });
