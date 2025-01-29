@@ -61,18 +61,97 @@ describe("GET /api/articles", () => {
             created_at: expect.any(String),
             votes: expect.any(Number),
             article_img_url: expect.any(String),
-            comment_count: expect.any(String),
+            comment_count: expect.any(Number),
           });
         });
       });
   });
-  test("200: should return the array of article objects sorted by date in descending order", () => {
+  test("200: should return the array of article objects sorted by date in descending order when there are no queries", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
         expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("200: should return the articles in ascending order when given query but still sorted by date by default", () => {
+    return request(app)
+      .get("/api/articles?order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toBeSortedBy("created_at", { ascending: true });
+      });
+  });
+  test("200: should return the articles sorted by article_id when queried", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toBeSortedBy("article_id", { descending: true });
+      });
+  });
+  test("200: should return the articles sorted by title when queried", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toBeSortedBy("title", { descending: true });
+      });
+  });
+  test("200: should return the articles sorted by topic when queried", () => {
+    return request(app)
+      .get("/api/articles?sort_by=topic")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toBeSortedBy("topic", { descending: true });
+      });
+  });
+  test("200: should return the articles sorted by author when queried", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toBeSortedBy("author", { descending: true });
+      });
+  });
+  test("200: should return the articles sorted by votes when queried", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toBeSortedBy("votes", { descending: true });
+      });
+  });
+  test("200: should return the articles sorted by comment_count and in ascending order when queried", () => {
+    return request(app)
+      .get("/api/articles?sort_by=comment_count&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles).toBeSortedBy("comment_count", { ascending: true });
+      });
+  });
+  test("400: shold return an error when given an invalid sorting query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=awards")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid sorting query");
+      });
+  });
+  test("400: shold return an error when given an invalid order query", () => {
+    return request(app)
+      .get("/api/articles?order=most")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid order query");
       });
   });
 });
