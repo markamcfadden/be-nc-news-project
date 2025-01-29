@@ -93,12 +93,12 @@ describe("GET /api/topics", () => {
 describe("GET /api/articles/:article_id", () => {
   test("200: responds with article requested", () => {
     return request(app)
-      .get("/api/articles/3")
+      .get("/api/articles/9")
       .expect(200)
       .then(({ body }) => {
         const article = body.article;
         expect(article).toMatchObject({
-          article_id: 3,
+          article_id: 9,
           title: expect.any(String),
           topic: expect.any(String),
           author: expect.any(String),
@@ -106,6 +106,7 @@ describe("GET /api/articles/:article_id", () => {
           created_at: expect.any(String),
           votes: expect.any(Number),
           article_img_url: expect.any(String),
+          comment_count: 2,
         });
       });
   });
