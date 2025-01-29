@@ -3,6 +3,7 @@ const {
   checkArticleIDExists,
   convertTimestampToDate,
   checkUsernameExists,
+  checkCommentExists,
 } = require("../db/seeds/utils");
 
 exports.selectCommentsByArticleID = (article_id) => {
@@ -49,5 +50,11 @@ exports.insertCommentByArticleID = (article_id, username, body) => {
       .then(({ rows }) => {
         return rows.map(convertTimestampToDate);
       });
+  });
+};
+
+exports.removeCommentByID = (comment_id) => {
+  return checkCommentExists(comment_id).then(() => {
+    return db.query(`DELETE FROM comments WHERE comment_id = $1`, [comment_id]);
   });
 };
