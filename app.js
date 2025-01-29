@@ -1,6 +1,7 @@
 const express = require("express");
 const { getEndpoints } = require("./controllers/api-controller");
 const { getTopics } = require("./controllers/topics-controller");
+const { getUsers } = require("./controllers/users-controller");
 const {
   getCommentsByArticleID,
   postCommentByArticleID,
@@ -18,6 +19,8 @@ app.use(express.json());
 app.get("/api", getEndpoints);
 
 app.get("/api/topics", getTopics);
+
+app.get("/api/users", getUsers);
 
 app.get("/api/articles", getArticles);
 
