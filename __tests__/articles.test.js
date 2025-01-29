@@ -154,6 +154,30 @@ describe("GET /api/articles", () => {
         expect(body.msg).toBe("Invalid order query");
       });
   });
+  test("200: should return all articles matching the topic query", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles.length).toBe(12);
+      });
+  });
+  test("200: should return an empty array if the topic is valid but no articles match the topic", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .then(({ body }) => {
+        const articles = body.articles;
+        expect(articles.length).toBe(0);
+      });
+  });
+  test("400: should return an error if the topic is invalid", () => {
+    return request(app)
+      .get("/api/articles/golf")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
 });
 
 describe("PATCH /api/articles/:article_id", () => {

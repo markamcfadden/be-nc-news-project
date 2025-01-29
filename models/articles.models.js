@@ -7,6 +7,7 @@ const {
 exports.selectArticles = (queries) => {
   const sort_by = queries.sort_by || "created_at";
   const order = queries.order || "desc";
+  const topic = queries.topic;
 
   let sqlString = `SELECT 
       articles.article_id, 
@@ -19,8 +20,14 @@ exports.selectArticles = (queries) => {
       COUNT(comments.article_id)::INTEGER AS comment_count 
       FROM articles 
       LEFT JOIN comments 
-      ON articles.article_id = comments.article_id 
-      GROUP BY articles.article_id`;
+      ON articles.article_id = comments.article_id`;
+
+  let args = [];
+
+  if (topic) {
+    sqlString += " WHERE topic = $1";
+    args.push(topic);
+  }
 
   if (sort_by) {
     const greenList = [
@@ -36,7 +43,7 @@ exports.selectArticles = (queries) => {
       return Promise.reject({ status: 400, msg: "Invalid sorting query" });
     }
   }
-
+  sqlString += ` GROUP BY articles.article_id`;
   sqlString += ` ORDER BY ${sort_by}`;
 
   if (order === "asc" || order === "desc") {
@@ -45,7 +52,7 @@ exports.selectArticles = (queries) => {
     return Promise.reject({ status: 400, msg: "Invalid order query" });
   }
 
-  return db.query(sqlString).then(({ rows }) => {
+  return db.query(sqlString, args).then(({ rows }) => {
     return rows.map(convertTimestampToDate);
   });
 };
