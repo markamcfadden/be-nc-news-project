@@ -4,26 +4,50 @@ const {
   convertTimestampToDate,
 } = require("../db/seeds/utils");
 
-exports.selectArticles = () => {
-  return db
-    .query(
-      `SELECT 
+exports.selectArticles = (queries) => {
+  const sort_by = queries.sort_by || "created_at";
+  const order = queries.order || "desc";
+
+  let sqlString = `SELECT 
       articles.article_id, 
       title, 
       topic, 
       articles.author, 
-      TO_CHAR(articles.created_at, 'YYYY-MM-DD HH24:MI:SS') AS created_at,
+      articles.created_at,
       articles.votes, 
       article_img_url, 
-      COUNT(comments.article_id) AS comment_count 
+      COUNT(comments.article_id)::INTEGER AS comment_count 
       FROM articles 
       LEFT JOIN comments 
       ON articles.article_id = comments.article_id 
-      GROUP BY articles.article_id ORDER BY created_at DESC`
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+      GROUP BY articles.article_id`;
+
+  if (sort_by) {
+    const greenList = [
+      "created_at",
+      "article_id",
+      "title",
+      "topic",
+      "author",
+      "votes",
+      "comment_count",
+    ];
+    if (!greenList.includes(sort_by)) {
+      return Promise.reject({ status: 400, msg: "Invalid sorting query" });
+    }
+  }
+
+  sqlString += ` ORDER BY ${sort_by}`;
+
+  if (order === "asc" || order === "desc") {
+    sqlString += " " + order;
+  } else {
+    return Promise.reject({ status: 400, msg: "Invalid order query" });
+  }
+
+  return db.query(sqlString).then(({ rows }) => {
+    return rows.map(convertTimestampToDate);
+  });
 };
 
 exports.selectArticleByID = (id) => {
@@ -32,6 +56,7 @@ exports.selectArticleByID = (id) => {
       return db.query("SELECT * FROM articles WHERE article_id = $1", [id]);
     })
     .then(({ rows }) => {
+      rows.map(convertTimestampToDate);
       return rows[0];
     });
 };

@@ -5,9 +5,11 @@ const {
 } = require("../models/articles.models");
 
 exports.getArticles = (req, res, next) => {
-  return selectArticles().then((articles) => {
-    res.status(200).send({ articles });
-  });
+  return selectArticles(req.query)
+    .then((articles) => {
+      res.status(200).send({ articles });
+    })
+    .catch(next);
 };
 
 exports.getArticleByID = (req, res, next) => {
