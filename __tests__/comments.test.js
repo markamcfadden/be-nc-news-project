@@ -158,3 +158,25 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("POST /api/comments.:comment_id", () => {
+  test("204: should successfully delete given comment", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
+  test("404: should return an error if the comment is not found", () => {
+    return request(app)
+      .delete("/api/comments/19")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("comment does not exist");
+      });
+  });
+  test("400: should return an error if given an invalid input", () => {
+    return request(app)
+      .delete("/api/comments/ducks")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+});
