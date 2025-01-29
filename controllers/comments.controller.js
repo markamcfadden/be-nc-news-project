@@ -17,15 +17,6 @@ exports.postCommentByArticleID = (req, res, next) => {
   const { article_id } = req.params;
   const { username, body } = req.body;
 
-  const expectedFields = ["username", "body"];
-  const recievedFields = Object.keys(req.body);
-  const unexpectedFields = recievedFields.filter(
-    (field) => !expectedFields.includes(field)
-  );
-  if (unexpectedFields.length > 0) {
-    return res.status(400).send({ msg: "Bad request, unexpected fields" });
-  }
-
   return insertCommentByArticleID(article_id, username, body)
     .then((comment) => {
       res.status(201).send({ comment });

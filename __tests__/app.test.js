@@ -400,7 +400,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Bad request");
       });
   });
-  test("400: should return an error if body has unexpected fields", () => {
+  test("201: should return the posted comment and ignore unwanted/additional fields", () => {
     const newComment = {
       username: "butter_bridge",
       age: 23,
@@ -409,9 +409,17 @@ describe("POST /api/articles/:article_id/comments", () => {
     return request(app)
       .post("/api/articles/2/comments")
       .send(newComment)
-      .expect(400)
+      .expect(201)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request, unexpected fields");
+        const comment = body.comment[0];
+        expect(comment).toMatchObject({
+          comment_id: 19,
+          body: "gripping read",
+          article_id: 2,
+          author: "butter_bridge",
+          votes: 0,
+          created_at: expect.any(String),
+        });
       });
   });
 });
@@ -468,14 +476,25 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(body.msg).toBe("Bad request, missing required fields");
       });
   });
-  test("400: should return an error if there are unexpected field", () => {
+  test("201: should return an updated article with the votes property adjusted accordingly even if other fields are present", () => {
     const votesToAdd = { inc_votes: 15, username: "butter_bridge" };
     return request(app)
       .patch("/api/articles/1")
       .send(votesToAdd)
-      .expect(400)
+      .expect(200)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request, unexpected fields");
+        const updatedArticle = body.updatedArticle[0];
+        expect(updatedArticle).toMatchObject({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: expect.any(String),
+          votes: 115,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
       });
   });
 });
