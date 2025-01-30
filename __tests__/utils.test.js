@@ -5,6 +5,7 @@ const {
   checkArticleIDExists,
   checkUsernameExists,
   checkCommentExists,
+  checkTopicExists,
 } = require("../db/seeds/utils");
 
 const db = require("../db/connection");
@@ -146,6 +147,18 @@ describe("checkCommentExists", () => {
     return expect(checkCommentExists(400)).rejects.toMatchObject({
       status: 404,
       msg: "comment does not exist",
+    });
+  });
+});
+
+describe("checkTopicExists", () => {
+  test("should resolve promise if topic exists ", () => {
+    return expect(checkTopicExists("cats")).resolves.toBe(undefined);
+  });
+  test("should reject promise if topic does not exist", () => {
+    return expect(checkTopicExists("football")).rejects.toMatchObject({
+      status: 404,
+      msg: "topic does not exist",
     });
   });
 });
