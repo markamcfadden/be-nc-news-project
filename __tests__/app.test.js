@@ -30,7 +30,7 @@ describe("GET /api/users", () => {
       });
   });
 
-  test("should return topic objects with wanted keys and correct data type as each value", () => {
+  test("should return user objects with wanted keys and correct data type as each value", () => {
     return request(app)
       .get("/api/users")
       .expect(200)
@@ -51,6 +51,31 @@ describe("GET /api/users", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Path not found");
+      });
+  });
+});
+
+describe("GET /api/users/:username", () => {
+  test("200: responds with the user requested", () => {
+    return request(app)
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then(({ body }) => {
+        const user = body.user;
+        expect(user).toMatchObject({
+          username: "butter_bridge",
+          name: "jonny",
+          avatar_url:
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+        });
+      });
+  });
+  test("404: returns an error if username does not exist", () => {
+    return request(app)
+      .get("/api/users/mcflurryoreos")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("username does not exist");
       });
   });
 });
