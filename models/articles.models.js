@@ -102,7 +102,7 @@ exports.patchArticleByID = (article_id, votesToAdd) => {
   return checkArticleIDExists(article_id).then(() => {
     return db
       .query(
-        `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
+        `UPDATE articles SET votes = GREATEST(votes + $1, 0) WHERE article_id = $2 RETURNING *`,
         [votesToAdd, article_id]
       )
       .then(({ rows }) => {
