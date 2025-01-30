@@ -338,6 +338,145 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 });
 
+describe("POST /api/articles", () => {
+  test("201 should return posted article", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "my first cat",
+      body: "the first time i saw gato...",
+      topic: "cats",
+      article_img_url:
+        "https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg?w=700&h=700",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article).toMatchObject({
+          author: "butter_bridge",
+          title: "my first cat",
+          body: "the first time i saw gato...",
+          topic: "cats",
+          article_img_url:
+            "https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg?w=700&h=700",
+          article_id: 14,
+          votes: 0,
+          created_at: expect.any(String),
+          comment_count: 0,
+        });
+      });
+  });
+  test("201: should return posted article with default url_img if not given one", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "my first cat",
+      body: "the first time i saw gato...",
+      topic: "cats",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article).toMatchObject({
+          author: "butter_bridge",
+          title: "my first cat",
+          body: "the first time i saw gato...",
+          topic: "cats",
+          article_img_url:
+            "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+          article_id: 14,
+          votes: 0,
+          created_at: expect.any(String),
+          comment_count: 0,
+        });
+      });
+  });
+  test("201 should return posted article, ignoring any additional fields, so long as all required field are present", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "my first cat",
+      body: "the first time i saw gato...",
+      topic: "cats",
+      dream: "own 400 cats",
+      article_img_url:
+        "https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg?w=700&h=700",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article).toMatchObject({
+          author: "butter_bridge",
+          title: "my first cat",
+          body: "the first time i saw gato...",
+          topic: "cats",
+          article_img_url:
+            "https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg?w=700&h=700",
+          article_id: 14,
+          votes: 0,
+          created_at: expect.any(String),
+          comment_count: 0,
+        });
+      });
+  });
+  test("400: should return an error if an incorrect data type is given", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      title: "my first cat",
+      body: 22,
+      topic: "cats",
+      article_img_url:
+        "https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg?w=700&h=700",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request, invalid data type");
+      });
+  });
+  test("404: should return an error if the author is not a registered username", () => {
+    const newArticle = {
+      author: "mcflurryoreos",
+      title: "my first cat",
+      body: "the first time i saw gato...",
+      topic: "cats",
+      article_img_url:
+        "https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg?w=700&h=700",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("username does not exist");
+      });
+  });
+  test("400: should return an error if a  required field is missing", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      body: "the first time i saw gato...",
+      topic: "cats",
+      article_img_url:
+        "https://images.pexels.com/photos/45201/kitty-cat-kitten-pet-45201.jpeg?w=700&h=700",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request, missing required field");
+      });
+  });
+});
+
 describe("POST /api/articles/:article_id/comments", () => {
   test("201: should return the posted comment", () => {
     const newComment = { username: "butter_bridge", body: "gripping read" };
