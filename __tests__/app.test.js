@@ -165,7 +165,7 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
-        expect(articles).toBeSortedBy("created_at", { ascending: true });
+        expect(articles).toBeSortedBy("created_at");
       });
   });
   test("200: should return the articles sorted by article_id when queried", () => {
@@ -219,7 +219,7 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         const articles = body.articles;
-        expect(articles).toBeSortedBy("comment_count", { ascending: true });
+        expect(articles).toBeSortedBy("comment_count");
       });
   });
   test("400: shold return an error when given an invalid sorting query", () => {
@@ -499,7 +499,7 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 
-describe("DELETE /api/comments.:comment_id", () => {
+describe("DELETE /api/comments/:comment_id", () => {
   test("204: should successfully delete given comment", () => {
     return request(app).delete("/api/comments/1").expect(204);
   });
