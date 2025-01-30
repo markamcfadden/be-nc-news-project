@@ -58,3 +58,30 @@ exports.removeCommentByID = (comment_id) => {
     return db.query(`DELETE FROM comments WHERE comment_id = $1`, [comment_id]);
   });
 };
+
+exports.patchCommentByID = (comment_id, votesToAdd) => {
+  if (!votesToAdd) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad request, missing required fields",
+    });
+  }
+
+  if (typeof votesToAdd !== "number") {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad request, invalid data type",
+    });
+  }
+
+  return checkCommentExists(comment_id).then(() => {
+    return db
+      .query(
+        `UPDATE comments SET votes = GREATEST(votes + $1, 0) WHERE comment_id =$2 RETURNING *`,
+        [votesToAdd, comment_id]
+      )
+      .then(({ rows }) => {
+        return rows.map(convertTimestampToDate);
+      });
+  });
+};
