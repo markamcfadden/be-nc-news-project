@@ -501,7 +501,7 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(body.msg).toBe("Bad request, missing required fields");
       });
   });
-  test("201: should return an updated article with the votes property adjusted accordingly even if other fields are present", () => {
+  test("200: should return an updated article with the votes property adjusted accordingly even if other fields are present", () => {
     const votesToAdd = { inc_votes: 15, username: "butter_bridge" };
     return request(app)
       .patch("/api/articles/1")
@@ -520,6 +520,17 @@ describe("PATCH /api/articles/:article_id", () => {
           article_img_url:
             "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
         });
+      });
+  });
+  test("200: should return an article with the votes no lower than zero regardless of the negative number given", () => {
+    const votesToAdd = { inc_votes: -200 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(votesToAdd)
+      .expect(200)
+      .then(({ body }) => {
+        const updatedArticle = body.updatedArticle[0];
+        expect(updatedArticle.votes).toBe(0);
       });
   });
 });
@@ -542,6 +553,86 @@ describe("DELETE /api/comments/:comment_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad request");
+      });
+  });
+});
+
+describe("PATCH /api/comments/:comment_id", () => {
+  test("200: should return an updated comment object with the votes property adjusted accordingly", () => {
+    const votesToAdd = { inc_votes: 12 };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(votesToAdd)
+      .expect(200)
+      .then(({ body }) => {
+        const updatedComment = body.updatedComment[0];
+        expect(updatedComment).toMatchObject({
+          created_at: "2020-04-06T12:17:00.000Z",
+          comment_id: 1,
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          article_id: 9,
+          author: "butter_bridge",
+          votes: 28,
+        });
+      });
+  });
+  test("200: should return an updated comment object with the votes property adjusted accordingly if votes is a negative number", () => {
+    const votesToAdd = { inc_votes: -12 };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(votesToAdd)
+      .expect(200)
+      .then(({ body }) => {
+        const updatedComment = body.updatedComment[0];
+        expect(updatedComment).toMatchObject({
+          created_at: "2020-04-06T12:17:00.000Z",
+          comment_id: 1,
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          article_id: 9,
+          author: "butter_bridge",
+          votes: 4,
+        });
+      });
+  });
+  test("400: should return an error if there is a missing required field", () => {
+    const votesToAdd = {};
+    return request(app)
+      .patch("/api/comments/1")
+      .send(votesToAdd)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request, missing required fields");
+      });
+  });
+  test("400: should return an error if the wrong data type is given", () => {
+    const votesToAdd = { inc_votes: "twelve" };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(votesToAdd)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request, invalid data type");
+      });
+  });
+  test("404: should return an error if the comment does not exist", () => {
+    const votesToAdd = { inc_votes: 12 };
+    return request(app)
+      .patch("/api/comments/88")
+      .send(votesToAdd)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("comment does not exist");
+      });
+  });
+  test("200: should return a votes property no lower than 0 even if negative number is more than current votes", () => {
+    const votesToAdd = { inc_votes: -175 };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(votesToAdd)
+      .expect(200)
+      .then(({ body }) => {
+        const updatedComment = body.updatedComment[0];
+        expect(updatedComment.votes).toBe(0);
       });
   });
 });
