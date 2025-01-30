@@ -2,6 +2,8 @@ const db = require("../db/connection");
 const {
   checkArticleIDExists,
   convertTimestampToDate,
+  checkUsernameExists,
+  checkTopicExists,
 } = require("../db/seeds/utils");
 
 exports.selectArticles = (queries) => {
@@ -107,6 +109,51 @@ exports.patchArticleByID = (article_id, votesToAdd) => {
       )
       .then(({ rows }) => {
         return rows.map(convertTimestampToDate);
+      });
+  });
+};
+
+exports.insertArticle = (author, title, body, topic, article_img_url) => {
+  if (!author || !title || !body || !topic) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad request, missing required field",
+    });
+  }
+
+  const img_url =
+    article_img_url ||
+    "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700";
+
+  if (
+    typeof author !== "string" ||
+    typeof title !== "string" ||
+    typeof body !== "string" ||
+    typeof topic !== "string" ||
+    typeof img_url !== "string"
+  ) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad request, invalid data type",
+    });
+  }
+
+  return Promise.all([
+    checkUsernameExists(author),
+    checkTopicExists(topic),
+  ]).then(() => {
+    return db
+      .query(
+        `INSERT INTO articles (title, topic, author, body, article_img_url)
+  VALUES ($1, $2, $3, $4, $5) RETURNING article_id;`,
+        [title, topic, author, body, img_url]
+      )
+      .then(({ rows }) => {
+        const { article_id } = rows[0];
+        return exports.selectArticleByID(article_id);
+      })
+      .then((article) => {
+        return article;
       });
   });
 };
