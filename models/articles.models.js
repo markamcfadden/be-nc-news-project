@@ -29,19 +29,17 @@ exports.selectArticles = (queries) => {
     args.push(topic);
   }
 
-  if (sort_by) {
-    const greenList = [
-      "created_at",
-      "article_id",
-      "title",
-      "topic",
-      "author",
-      "votes",
-      "comment_count",
-    ];
-    if (!greenList.includes(sort_by)) {
-      return Promise.reject({ status: 400, msg: "Invalid sorting query" });
-    }
+  const greenList = [
+    "created_at",
+    "article_id",
+    "title",
+    "topic",
+    "author",
+    "votes",
+    "comment_count",
+  ];
+  if (!greenList.includes(sort_by)) {
+    return Promise.reject({ status: 400, msg: "Invalid sorting query" });
   }
 
   sqlString += ` GROUP BY articles.article_id`;
