@@ -16,7 +16,7 @@ You will need to create two .env files in the root directory:
 .env.development & .env.test
 Each file should contain:
 PGDATABASE=<database_name>
-The correct database names can be found in db/setup.sql.
+The correct database names can be found in db/setup.sql
 To set up the database, run npm run setup-dbs.
 To seed the databases with test data, run npm run seed.
 To run the test suites, run npm test.
