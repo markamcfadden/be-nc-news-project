@@ -105,10 +105,10 @@
       "artcile_img_url": "image url"
     }
   },
-  "PATCH /api/comments/:comment_id":{
+  "PATCH /api/comments/:comment_id": {
     "description": "updates the votes on a comment",
     "requestBody": { "inc_votes": 1 },
-    "exampleResponse" {
+    "exampleResponse": {
       "created_at": "2020-04-06T12:17:00.000Z",
       "comment_id": 1,
       "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
