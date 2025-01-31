@@ -2,7 +2,7 @@
 
 ---
 
-You can access the live API here: https://mnn-njx1.onrender.com
+You can access the live API here: https://mnn-jvu9.onrender.com
 
 This API allows users to retrieve and interact with articles, comments, and user data. It was built using Node.js, Express, and PostgreSQL, following RESTful principles.
 
