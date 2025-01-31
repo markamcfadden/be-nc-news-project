@@ -4,6 +4,7 @@ const request = require("supertest");
 const app = require("../app.js");
 const seed = require("../db/seeds/seed.js");
 const testData = require("../db/data/test-data/index.js");
+const articles = require("../db/data/test-data/articles.js");
 
 beforeEach(() => seed(testData));
 afterAll(() => db.end());
@@ -285,6 +286,20 @@ describe("GET /api/articles", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad request");
+      });
+  });
+});
+
+describe("GET /api/articles PAGINATION feature", () => {
+  test("200: should return a paginated list of articles when quiered", () => {
+    return request(app)
+      .get("/api/articles?limit=10&p=1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(10);
+        expect(body.total_count).toBe(13);
+        expect(body.page).toBe(1);
+        expect(body.limit).toBe(10);
       });
   });
 });
