@@ -291,7 +291,7 @@ describe("GET /api/articles", () => {
 });
 
 describe("GET /api/articles PAGINATION feature", () => {
-  test("200: should return a paginated list of articles when quiered", () => {
+  test("200: should return a paginated list of articles when quiered with limit and page", () => {
     return request(app)
       .get("/api/articles?limit=10&p=1")
       .expect(200)
@@ -300,6 +300,28 @@ describe("GET /api/articles PAGINATION feature", () => {
         expect(body.total_count).toBe(13);
         expect(body.page).toBe(1);
         expect(body.limit).toBe(10);
+      });
+  });
+  test("200: should return all articles if no limit is provided", () => {
+    return request(app)
+      .get("/api/articles?")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(13);
+        expect(body.total_count).toBe(13);
+        expect(body.page).toBe(1);
+        expect(body.limit).toBe(null);
+      });
+  });
+  test("200: should return correct page of the articles", () => {
+    return request(app)
+      .get("/api/articles?limit=5&p=2")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(5);
+        expect(body.total_count).toBe(13);
+        expect(body.page).toBe(2);
+        expect(body.limit).toBe(5);
       });
   });
 });
