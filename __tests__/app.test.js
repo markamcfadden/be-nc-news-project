@@ -485,7 +485,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(201)
       .then(({ body }) => {
-        const comment = body.comment[0];
+        const comment = body.comment;
         expect(comment).toMatchObject({
           comment_id: 19,
           body: "gripping read",
@@ -575,7 +575,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(newComment)
       .expect(201)
       .then(({ body }) => {
-        const comment = body.comment[0];
+        const comment = body.comment;
         expect(comment).toMatchObject({
           comment_id: 19,
           body: "gripping read",
@@ -599,7 +599,7 @@ describe("POST /api/topics", () => {
       .send(newTopic)
       .expect(201)
       .then(({ body }) => {
-        const topic = body.topic[0];
+        const topic = body.topic;
         expect(topic).toMatchObject({
           slug: "poker",
           description: "A strategic and psychological card game",
@@ -617,7 +617,7 @@ describe("POST /api/topics", () => {
       .send(newTopic)
       .expect(201)
       .then(({ body }) => {
-        const topic = body.topic[0];
+        const topic = body.topic;
         expect(topic).toMatchObject({
           slug: "poker",
           description: "A strategic and psychological card game",

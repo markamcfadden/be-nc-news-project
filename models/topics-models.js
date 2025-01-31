@@ -27,6 +27,6 @@ exports.insertTopic = (slug, description) => {
       [slug, description]
     )
     .then(({ rows }) => {
-      return rows;
+      return rows[0];
     });
 };

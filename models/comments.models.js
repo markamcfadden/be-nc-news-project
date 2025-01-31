@@ -48,7 +48,8 @@ exports.insertCommentByArticleID = (article_id, username, body) => {
         [body, article_id, username]
       )
       .then(({ rows }) => {
-        return rows.map(convertTimestampToDate);
+        rows.map(convertTimestampToDate);
+        return rows[0];
       });
   });
 };
