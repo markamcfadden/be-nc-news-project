@@ -588,6 +588,69 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
+describe("POST /api/topics", () => {
+  test("201: should return the new topic", () => {
+    const newTopic = {
+      slug: "poker",
+      description: "A strategic and psychological card game",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(201)
+      .then(({ body }) => {
+        const topic = body.topic[0];
+        expect(topic).toMatchObject({
+          slug: "poker",
+          description: "A strategic and psychological card game",
+        });
+      });
+  });
+  test("201: should return the new topic, ignoring extra fields", () => {
+    const newTopic = {
+      slug: "poker",
+      description: "A strategic and psychological card game",
+      age: 23,
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(201)
+      .then(({ body }) => {
+        const topic = body.topic[0];
+        expect(topic).toMatchObject({
+          slug: "poker",
+          description: "A strategic and psychological card game",
+        });
+      });
+  });
+  test("400: should return an error if given an invalid data type", () => {
+    const newTopic = {
+      slug: true,
+      description: "A strategic and psychological card game",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request, invalid data type");
+      });
+  });
+  test("400: should return an error if missing required field", () => {
+    const newTopic = {
+      description: "A strategic and psychological card game",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request, missing required fields");
+      });
+  });
+});
+
 describe("PATCH /api/articles/:article_id", () => {
   test("200: should return an updated article with the votes property adjusted accordingly", () => {
     const votesToAdd = { inc_votes: 15 };

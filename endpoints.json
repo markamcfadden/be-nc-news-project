@@ -112,6 +112,17 @@
       "comment_count": 0
     }
   },
+  "POST /api/topics": {
+    "description": "adds a new topic",
+    "requestBody": {
+      "slug": "poker",
+      "description": "A strategic and psychological card game"
+    },
+    "exampleResponse": {
+      "slug": "poker",
+      "description": "A strategic and psychological card game"
+    }
+  },
   "PATCH /api/articles/:article_id": {
     "description": "updates the votes on an article",
     "requestBody": { "inc_votes": 1 },
