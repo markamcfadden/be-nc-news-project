@@ -7,8 +7,13 @@ const {
 
 exports.getArticles = (req, res, next) => {
   return selectArticles(req.query)
-    .then((articles) => {
-      res.status(200).send({ articles });
+    .then((articlesData) => {
+      res.status(200).send({
+        articles: articlesData.articles,
+        total_count: articlesData.total_count,
+        limit: articlesData.limit,
+        page: articlesData.page,
+      });
     })
     .catch(next);
 };

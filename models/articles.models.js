@@ -10,6 +10,22 @@ exports.selectArticles = (queries) => {
   const sort_by = queries.sort_by || "created_at";
   const order = queries.order || "desc";
   const topic = queries.topic;
+  const limit = queries.limit ? parseInt(queries.limit) : null;
+  const p = parseInt(queries.p) || 1;
+
+  if (isNaN(p) || p <= 0) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid pagination parameters",
+    });
+  }
+
+  if (limit !== null && (isNaN(limit) || limit <= 0)) {
+    Promise.reject({
+      status: 400,
+      msg: "Invalid limit value, must be a positive integer",
+    });
+  }
 
   let sqlString = `SELECT 
       articles.article_id, 
@@ -44,8 +60,7 @@ exports.selectArticles = (queries) => {
     return Promise.reject({ status: 400, msg: "Invalid sorting query" });
   }
 
-  sqlString += ` GROUP BY articles.article_id`;
-  sqlString += ` ORDER BY ${sort_by}`;
+  sqlString += ` GROUP BY articles.article_id ORDER BY ${sort_by}`;
 
   if (order === "asc" || order === "desc") {
     sqlString += " " + order;
@@ -53,9 +68,24 @@ exports.selectArticles = (queries) => {
     return Promise.reject({ status: 400, msg: "Invalid order query" });
   }
 
-  return db.query(sqlString, args).then(({ rows }) => {
-    return rows.map(convertTimestampToDate);
-  });
+  const offset = (p - 1) * (limit || 1);
+  if (limit) {
+    sqlString += ` LIMIT $${args.length + 1} OFFSET $${args.length + 2}`;
+    args.push(limit, offset);
+  }
+
+  const articlesQuery = db.query(sqlString, args);
+  const countQuery = db.query(
+    `SELECT COUNT(*)::INTEGER AS total_count FROM articles`
+  );
+
+  return Promise.all([articlesQuery, countQuery]).then(
+    ([articlesRes, countRes]) => {
+      const articles = articlesRes.rows;
+      const totalCount = countRes.rows[0].total_count;
+      return { articles, total_count: totalCount, limit, page: p };
+    }
+  );
 };
 
 exports.selectArticleByID = (article_id) => {
