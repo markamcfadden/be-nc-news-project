@@ -151,5 +151,8 @@
   },
   "DELETE /api/comments/:comment_id": {
     "description": "deletes the specificied comment"
+  },
+  "DELETE /api/articles/:article_id": {
+    "description": "deletes the specified articles and all related comments"
   }
 }
