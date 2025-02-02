@@ -189,7 +189,6 @@ exports.insertArticle = (author, title, body, topic, article_img_url) => {
 };
 
 exports.removeArticleAndCommentsByID = (article_id) => {
-  console.log(article_id, "<<<<<<<<<<");
   return checkArticleIDExists(article_id).then(() => {
     return Promise.all([
       db.query(`DELETE FROM comments WHERE article_id = $1`, [article_id]),
